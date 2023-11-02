@@ -1,10 +1,9 @@
 def fizz_buzz(n)
-  case 
-  when n % 3 == 0 && n % 5 == 0
+  if n % 3 == 0 && n % 5 == 0
     "FizzBuzz"
-  when n % 3 == 0 
+  elsif n % 3 == 0 
     "Fizz"
-  when n % 5 == 0
+  elsif n % 5 == 0
     "Buzz"
   else
     n
