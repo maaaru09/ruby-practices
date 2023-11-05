@@ -1,35 +1,38 @@
 #!/usr/bin/env ruby
-
 require "date"
 require 'optparse'
 
 opt = OptionParser.new
-opt.on('-m') {|v| v}
-opt.on('-y') {|v| v}
-opt.parse!(ARGV)
+options = {}
+opt.on('-m [month]', Integer) {|v| options[:m] = v}
+opt.on('-y [year]', Integer) {|v| options[:y] = v}
+opt.parse(ARGV)
 
-month = ARGV[0].to_i
-year = ARGV[1].to_i
+month = options[:m]
+year = options[:y]
 
 today = Date.today
-if month == 0
+if month == nil
   month = today.month
 end
 
-if year == 0
+if year == nil
   year = today.year
 end
 
-first_day = Date.new(year, month, 1)
-last_day = Date.new(year, month, -1)
-days = [*first_day..last_day]
+first_date = Date.new(year, month, 1)
+last_date = Date.new(year, month, -1)
 
 puts "#{month}月 #{year}".center(20)
 puts "日 月 火 水 木 金 土"
-print "   " * first_day.wday
-days.each do |day|
-  print day.strftime('%-d').center(3)
-  if day.saturday?
+print "   " * first_date.wday
+
+first_date.upto(last_date) do |date|
+  print date.strftime('%-d').rjust(2)
+  if date.saturday?
     print "\n"
+  end
+  unless date.saturday?
+    print " "
   end
 end
