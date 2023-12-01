@@ -2,9 +2,10 @@
 
 # frozen_string_literal: true
 
+COLUMN_COUNT = 3
 def main
   files = Dir.glob('*')
-  columns = slice_files(files, 3)
+  columns = slice_files(files, COLUMN_COUNT)
   display_columns(columns)
 end
 
@@ -19,7 +20,7 @@ def display_columns(columns)
     column.each do |file|
       print file.ljust(column_width + 1)
     end
-    puts "\n"
+    puts
   end
 end
 
