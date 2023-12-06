@@ -6,14 +6,14 @@ require 'optparse'
 
 COLUMN_COUNT = 3
 def main
-  files = options
+  files = fetch_files
   columns = slice_files(files, COLUMN_COUNT)
   display_columns(columns)
 end
 
-def options
-  options = ARGV.getopts('a')
-  options['a'] ? option_a : Dir.glob('*')
+def fetch_files
+  option = ARGV.getopts('a')
+  option['a'] ? option_a : Dir.glob('*')
 end
 
 def option_a
