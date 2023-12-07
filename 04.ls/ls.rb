@@ -6,17 +6,21 @@ require 'optparse'
 
 COLUMN_COUNT = 3
 def main
-  files = fetch_files
+  options = parse_options
+  files = fetch_files(options['a'])
   columns = slice_files(files, COLUMN_COUNT)
   display_columns(columns)
 end
 
-def fetch_files
-  option = ARGV.getopts('a')
-  option['a'] ? option_a : Dir.glob('*')
+def parse_options
+  ARGV.getopts('a')
 end
 
-def option_a
+def fetch_files(parse_options)
+  parse_options ? fetch_hidden_and_files : Dir.glob('*')
+end
+
+def fetch_hidden_and_files
   Dir.glob('*', File::FNM_DOTMATCH)
 end
 
