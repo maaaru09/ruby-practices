@@ -16,12 +16,9 @@ def parse_options
   ARGV.getopts('a')
 end
 
-def fetch_files(parse_options)
-  parse_options ? fetch_hidden_and_files : Dir.glob('*')
-end
-
-def fetch_hidden_and_files
-  Dir.glob('*', File::FNM_DOTMATCH)
+def fetch_files(show_hidden_and_files)
+  flags = show_hidden_and_files ? File::FNM_DOTMATCH : 0
+  Dir.glob('*', flags)
 end
 
 def slice_files(files, number)
