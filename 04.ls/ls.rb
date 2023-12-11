@@ -16,8 +16,8 @@ def parse_options
   ARGV.getopts('a')
 end
 
-def fetch_files(show_hidden_and_files)
-  flags = show_hidden_and_files ? File::FNM_DOTMATCH : 0
+def fetch_files(show_with_hidden_files)
+  flags = show_with_hidden_files ? File::FNM_DOTMATCH : 0
   Dir.glob('*', flags)
 end
 
