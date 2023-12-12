@@ -2,11 +2,23 @@
 
 # frozen_string_literal: true
 
+require 'optparse'
+
 COLUMN_COUNT = 3
 def main
-  files = Dir.glob('*')
+  options = parse_options
+  files = fetch_files(options['a'])
   columns = slice_files(files, COLUMN_COUNT)
   display_columns(columns)
+end
+
+def parse_options
+  ARGV.getopts('a')
+end
+
+def fetch_files(show_with_hidden_files)
+  flags = show_with_hidden_files ? File::FNM_DOTMATCH : 0
+  Dir.glob('*', flags)
 end
 
 def slice_files(files, number)
