@@ -33,14 +33,8 @@ def main
   files = Dir.glob('*')
   options = parse_options
 
-  user_id = Process.uid
-  user_name = Etc.getpwuid(user_id).name
-
-  group_id = Process.gid
-  group_name = Etc.getgrgid(group_id).name
-
   if options['l']
-    display_long_files(files, user_name, group_name)
+    display_in_long_format(files)
   else
     columns = slice_files(files, COLUMN_COUNT)
     display_columns(columns)
@@ -66,10 +60,14 @@ def display_columns(columns)
   end
 end
 
-def display_long_files(files, user_name, group_name)
-  block = files.map do |file|
-    File.stat(file).blocks
-  end
+def display_in_long_format(files)
+  user_id = Process.uid
+  user_name = Etc.getpwuid(user_id).name
+
+  group_id = Process.gid
+  group_name = Etc.getgrgid(group_id).name
+
+  block = files.map { |file| File.stat(file).blocks }
   puts "total #{block.sum}"
 
   files.each do |file|
@@ -78,15 +76,13 @@ def display_long_files(files, user_name, group_name)
     octal_number = files.mode.to_s(8).chars
     octal_number.unshift('0') if octal_number.size == 5
 
-    print FILE_TYPE[octal_number[0] + octal_number[1]]
-    print FILE_PERMISSION[octal_number[3]]
-    print FILE_PERMISSION[octal_number[4]]
-    print FILE_PERMISSION[octal_number[5]]
+    print FILE_TYPE[octal_number[0] + octal_number[1]], FILE_PERMISSION[octal_number[3]]
+    print FILE_PERMISSION[octal_number[4]], FILE_PERMISSION[octal_number[5]]
     print " #{files.nlink.to_s.rjust(2)}"
     print " #{user_name.ljust(user_name.size)}"
     print "  #{group_name}"
     print " #{files.size.to_s.rjust(5)}"
-    print " #{files.mtime.strftime('%-m %_d %H:%M')}"
+    print " #{files.mtime.strftime('%_m %_d %H:%M')}"
     print " #{file}"
     puts
   end
