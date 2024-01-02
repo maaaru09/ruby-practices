@@ -71,18 +71,18 @@ def display_in_long_format(files)
   puts "total #{block.sum}"
 
   files.each do |file|
-    files = File.stat(file)
+    file_information = File.stat(file)
 
-    octal_number = files.mode.to_s(8).chars
+    octal_number = file_information.mode.to_s(8).chars
     octal_number.unshift('0') if octal_number.size == 5
 
     print FILE_TYPE[octal_number[0] + octal_number[1]], FILE_PERMISSION[octal_number[3]]
     print FILE_PERMISSION[octal_number[4]], FILE_PERMISSION[octal_number[5]]
-    print " #{files.nlink.to_s.rjust(2)}"
+    print " #{file_information.nlink.to_s.rjust(2)}"
     print " #{user_name.ljust(user_name.size)}"
     print "  #{group_name}"
-    print " #{files.size.to_s.rjust(5)}"
-    print " #{files.mtime.strftime('%_m %_d %H:%M')}"
+    print " #{file_information.size.to_s.rjust(5)}"
+    print " #{file_information.mtime.strftime('%_m %_d %H:%M')}"
     print " #{file}"
     puts
   end
