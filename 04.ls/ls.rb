@@ -30,8 +30,10 @@ FILE_TYPE = {
 COLUMN_COUNT = 3
 
 def main
-  files = Dir.glob('*')
   options = parse_options
+
+  files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  files = files.reverse if options['r']
 
   if options['l']
     display_in_long_format(files)
@@ -42,7 +44,7 @@ def main
 end
 
 def parse_options
-  ARGV.getopts('l')
+  ARGV.getopts('alr')
 end
 
 def slice_files(files, number)
@@ -71,18 +73,18 @@ def display_in_long_format(files)
   puts "total #{block.sum}"
 
   files.each do |file|
-    file_information = File.stat(file)
+    file_stat = File.stat(file)
 
-    octal_number = file_information.mode.to_s(8).chars
+    octal_number = file_stat.mode.to_s(8).chars
     octal_number.unshift('0') if octal_number.size == 5
 
     print FILE_TYPE[octal_number[0] + octal_number[1]], FILE_PERMISSION[octal_number[3]]
     print FILE_PERMISSION[octal_number[4]], FILE_PERMISSION[octal_number[5]]
-    print " #{file_information.nlink.to_s.rjust(2)}"
+    print " #{file_stat.nlink.to_s.rjust(2)}"
     print " #{user_name.ljust(user_name.size)}"
     print "  #{group_name}"
-    print " #{file_information.size.to_s.rjust(5)}"
-    print " #{file_information.mtime.strftime('%_m %_d %H:%M')}"
+    print " #{file_stat.size.to_s.rjust(5)}"
+    print " #{file_stat.mtime.strftime('%_m %_d %H:%M')}"
     print " #{file}"
     puts
   end
