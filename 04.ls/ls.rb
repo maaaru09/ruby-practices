@@ -32,7 +32,8 @@ COLUMN_COUNT = 3
 def main
   options = parse_options
 
-  files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  flags = options['a'] ? File::FNM_DOTMATCH : 0
+  files = Dir.glob('*', flags)
   files = files.reverse if options['r']
 
   if options['l']
