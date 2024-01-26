@@ -9,14 +9,8 @@ def main
   options = parse_options
   options = { l: true, w: true, c: true } if options.empty?
 
-  if args.empty?
-    str = $stdin.read
-    display_standard_input_count(options, str)
-  else
-    display_args_count(args, options)
-  end
-
-  total_display(args, options) if args.size > 1
+  display_args_counts(args, options)
+  display_total(args, options) if args.size > 1
 end
 
 def parse_options
@@ -40,40 +34,41 @@ def contents_counts(str, arg = '')
   }
 end
 
-def display_standard_input_count(str, options)
-  content = contents_counts(str)
+def display_args_counts(args, options)
+  if args.empty?
+    args = $stdin.read
+    content = contents_counts(args)
+    display_counts(content, options)
+    puts
+  else
+    args.each do |arg|
+      str = File.read(arg)
+      content = contents_counts(str, arg)
+      display_counts(content, options)
+      print content[:filename]
+    end
+  end
+end
+
+def display_counts(content, options)
   print content[:lines].to_s.rjust(8) if options[:l]
   print content[:words].to_s.rjust(8) if options[:w]
   print content[:bytes].to_s.rjust(8) if options[:c]
-  puts
 end
 
-def display_args_count(args, options)
-  args.each do |arg|
-    str = File.read(arg)
-    content = contents_counts(str, arg)
-    print content[:lines].to_s.rjust(8) if options[:l]
-    print content[:words].to_s.rjust(8) if options[:w]
-    print content[:bytes].to_s.rjust(8) if options[:c]
-    print content[:filename]
-  end
-end
+def display_total(args, options)
+  total_count =
+    args.map do |arg|
+      str = File.read(arg)
+      content = contents_counts(str, arg)
+      { lines: content[:lines], words: content[:words], bytes: content[:bytes] }
+    end
 
-def total_display(args, options)
-  line_sum = 0
-  word_sum = 0
-  byte_sum = 0
-  args.each do |arg|
-    str = File.read(arg)
-    content = contents_counts(str, arg)
-    line_sum += content[:lines]
-    word_sum += content[:words]
-    byte_sum += content[:bytes]
-  end
-  print line_sum.to_s.rjust(8) if options[:l]
-  print word_sum.to_s.rjust(8) if options[:w]
-  print byte_sum.to_s.rjust(8) if options[:c]
+  print total_count.sum { |count| count[:lines] }.to_s.rjust(8) if options[:l]
+  print total_count.sum { |count| count[:words] }.to_s.rjust(8) if options[:w]
+  print total_count.sum { |count| count[:bytes] }.to_s.rjust(8) if options[:c]
   print ' total'
+  puts
 end
 
 main
